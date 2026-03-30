@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { JWT_TOKEN } from "./config";
-
+import { JWT_TOKEN } from "@repo/backend-common/config";
 export function MiddleWhere(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.token;
 

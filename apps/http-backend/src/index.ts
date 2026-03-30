@@ -2,20 +2,17 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import * as z from "zod";
 import jwt from "jsonwebtoken";
-import { JWT_TOKEN } from "./config.js";
+import { JWT_TOKEN } from "@repo/backend-common/config";
 import { MiddleWhere } from "./MiddleWhere.js";
+import { SigninSchema, SignupSchema } from "@repo/common/types";
 
 const app = express();
 
-const user = z.object({
-  username: z.string(),
-  password: z.string(),
-});
 
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  const Response = user.safeParse(req.body);
+  const Response = SignupSchema.safeParse(req.body);
 
   if (!Response.success) {
     res.status(403).json({
@@ -42,7 +39,7 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/signin", async (req, res) => {
-  const Response = user.safeParse(req.body);
+  const Response = SigninSchema.safeParse(req.body);
 
   if (!Response.success) {
     res.status(402).json({
@@ -79,7 +76,10 @@ app.post("/signin", async (req, res) => {
 
 
 app.post("/chat-room", MiddleWhere,async (req, res) => {
-
+          
+    return res.status(200).json({
+         message:"Successfully Joined Room"
+    })
 });
 
 app.listen(3001, () => {

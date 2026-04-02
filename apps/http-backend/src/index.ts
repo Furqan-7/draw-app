@@ -16,6 +16,8 @@ app.use(express.json());
 app.post("/signup", async (req, res) => {
   const Response = SignupSchema.safeParse(req.body);
 
+  console.log("Reached Signup");
+
   if (!Response.success) {
     res.status(403).json({
       message: "Invalid Format",
@@ -36,12 +38,11 @@ app.post("/signup", async (req, res) => {
       data: {
         email: email,
         password: password,
-        name: name,
-        photo: photo
+        name: name
       }
     });
 
-    if (user.success) {
+    if (user) {
       res.status(200).json({
         message: "User Signup successfully",
       });
@@ -82,7 +83,7 @@ app.post("/signin", async (req, res) => {
       }
     });
 
-    if (user.success) {
+    if (user) {
       const User_id = user.id;
       const token = jwt.sign({ userId: User_id.toString() }, JWT_TOKEN, {
         expiresIn: "24h",
@@ -131,6 +132,22 @@ app.post("/chat-room", MiddleWhere, async (req, res) => {
     message: "Successfully Joined Room"
   })
 });
+
+// app.get("/chat:",MiddleWhere,async(req ,res)=>{
+//           const id = req.params.id;
+//          if(!id){
+//              return res.status(403).json({
+//               message:"invalid",
+//              })
+//          }
+
+//          try{ 
+         
+//          }
+//          catch(e){
+          
+//          }
+// })
 
 app.listen(3001, () => {
   console.log("http-server is Running on 3001");

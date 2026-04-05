@@ -117,8 +117,8 @@ app.post("/signin", async (req, res) => {
 app.post("/chat", MiddleWhere, async (req, res) => {
 
   const Response = RoomSchema.safeParse({
-    slug:req.body.slug,
-    adminId:res.locals.userId
+    slug: req.body.slug,
+    adminId: res.locals.userId
   });
 
   if (!Response.success) {
@@ -157,21 +157,38 @@ app.post("/chat", MiddleWhere, async (req, res) => {
 
 });
 
-// app.get("/chat:",MiddleWhere,async(req ,res)=>{
-//           const id = req.params.id;
-//          if(!id){
-//              return res.status(403).json({
-//               message:"invalid",
-//              })
-//          }
+app.get("/chats/:id", MiddleWhere, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!id) {
+    return res.status(403).json({
+      message: "invalid",
+    })
+  }
 
-//          try{ 
+  try {
+    const messages = await prisma.chat.findMany({
+      where: {
+        roomId: id,
+      },
+      orderBy: {
+        message: "desc"
+      },
+      take: 50
+    });
 
-//          }
-//          catch(e){
+    return res.status(200).json({
+      message: messages,
+      status: "success"
+    });
 
-//          }
-// })
+  }
+  catch (e) {
+    return res.status(404).json({
+      message: "Failed to fetch the messages",
+      error: e
+    });
+  }
+})
 
 app.listen(3001, () => {
   console.log("http-server is Running on 3001");

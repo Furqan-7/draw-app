@@ -26,8 +26,9 @@ export function MiddleWhere(req: Request, res: Response, next: NextFunction) {
         message: "Invalid Token playload",
       });
     }
-
-    res.locals.userId = decoded.userId;
+    
+    console.log("Middle Where decoded id "+decoded.userId);
+     res.locals.userId = decoded.userId;
    next();
   } catch (e) {
     res.status(500).json({

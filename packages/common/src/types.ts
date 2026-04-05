@@ -1,4 +1,5 @@
 import z from "zod";
+import { ZodString } from "zod/v4";
 
 
 export const SignupSchema = z.object({
@@ -15,6 +16,5 @@ export const SigninSchema = z.object({
 
 export const RoomSchema = z.object({
     slug: z.string(),
-    adminId: z.string(),
-    createdAt: z.date()
+    adminId:z.string().uuid()
 })

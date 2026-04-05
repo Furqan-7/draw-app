@@ -4,8 +4,9 @@ import * as z from "zod";
 import jwt from "jsonwebtoken";
 import { JWT_TOKEN } from "@repo/backend-common/config";
 import { MiddleWhere } from "./MiddleWhere.js";
-import { SigninSchema, SignupSchema ,RoomSchema} from "@repo/common/types";
+import { SigninSchema, SignupSchema, RoomSchema } from "@repo/common/types";
 import { prisma } from "@repo/db/client";
+import { error } from "node:console";
 
 
 const app = express();
@@ -113,24 +114,47 @@ app.post("/signin", async (req, res) => {
 
 
 
-app.post("/chat-room", MiddleWhere, async (req, res) => {
+app.post("/chat", MiddleWhere, async (req, res) => {
 
-  const Response = RoomSchema.safeParse(req.body);
+  const Response = RoomSchema.safeParse({
+    slug:req.body.slug,
+    adminId:res.locals.userId
+  });
 
-  if(!Response.success){
-      return res.status(400).json({
-        message:"Invalid Format",
-        error:Response.error
-      });
+  if (!Response.success) {
+    return res.status(400).json({
+      message: "Invalid Format",
+      error: Response.error
+    });
   }
 
   const slug = req.body.slug;
-  const adminId = req.body.adminId;
+  const userId = res.locals.userId;
 
 
-  return res.status(200).json({
-    message: "Successfully Joined Room"
-  })
+
+
+  try {
+    const room = await prisma.room.create({
+      data: {
+        slug: slug,
+        adminId: userId
+      }
+    });
+
+    return res.status(200).json({
+      message: "Successfully Joined Room",
+      room: room.id
+    })
+  } catch (e) {
+    return res.status(400).json({
+      messgae: "Falied to create room",
+      error: e
+    });
+  }
+
+
+
 });
 
 // app.get("/chat:",MiddleWhere,async(req ,res)=>{
@@ -142,10 +166,10 @@ app.post("/chat-room", MiddleWhere, async (req, res) => {
 //          }
 
 //          try{ 
-         
+
 //          }
 //          catch(e){
-          
+
 //          }
 // })
 

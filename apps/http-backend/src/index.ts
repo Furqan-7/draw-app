@@ -7,12 +7,20 @@ import { MiddleWhere } from "./MiddleWhere.js";
 import { SigninSchema, SignupSchema, RoomSchema } from "@repo/common/types";
 import { prisma } from "@repo/db/client";
 import { error } from "node:console";
+import cors from "cors";
 
 
 const app = express();
 
 
 app.use(express.json());
+
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
+
+
 
 app.post("/signup", async (req, res) => {
   const Response = SignupSchema.safeParse(req.body);
@@ -46,17 +54,20 @@ app.post("/signup", async (req, res) => {
     if (user) {
       res.status(200).json({
         message: "User Signup successfully",
+        valid: true
       });
     }
     else {
       res.status(400).json({
-        message: "User Already Exists"
+        message: "User Already Exists",
+        valid: false
       })
     }
   } catch (e) {
     res.status(500).json({
       message: "Internal server issue",
       error: e,
+      valid: false
     });
   }
 });
@@ -124,7 +135,8 @@ app.post("/chat", MiddleWhere, async (req, res) => {
   if (!Response.success) {
     return res.status(400).json({
       message: "Invalid Format",
-      error: Response.error
+      error: Response.error,
+      valid: false
     });
   }
 
@@ -144,12 +156,14 @@ app.post("/chat", MiddleWhere, async (req, res) => {
 
     return res.status(200).json({
       message: "Successfully Joined Room",
-      room: room.id
+      room: room.id,
+      valid: true
     })
   } catch (e) {
     return res.status(400).json({
       messgae: "Falied to create room",
-      error: e
+      error: e,
+      valid: false
     });
   }
 

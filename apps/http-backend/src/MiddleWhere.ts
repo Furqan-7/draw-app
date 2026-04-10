@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { JWT_TOKEN } from "@repo/backend-common/config";
 export function MiddleWhere(req: Request, res: Response, next: NextFunction) {
   const token = req.headers.token;
+  console.log("Reached Middle where");
+  console.log("ANd This is Token "+token);
 
   //   Reject The Token if it has sent as token
   if (!token || Array.isArray(token)) {
@@ -11,10 +13,10 @@ export function MiddleWhere(req: Request, res: Response, next: NextFunction) {
     });
   }
 
-  const decoded = jwt.verify(token, JWT_TOKEN);
-  console.log(JWT_TOKEN);
-
   try {
+    const decoded = jwt.verify(token, JWT_TOKEN);
+    console.log(JWT_TOKEN);
+
     if (typeof decoded === "string") {
       return res.status(400).json({
         message: "Invalid Format",
@@ -22,17 +24,17 @@ export function MiddleWhere(req: Request, res: Response, next: NextFunction) {
     }
 
     if (!decoded.userId) {
-      res.status(404).json({
-        message: "Invalid Token playload",
+      return res.status(404).json({
+        message: "Invalid Token payload",
       });
     }
-    
-    console.log("Middle Where decoded id "+decoded.userId);
-     res.locals.userId = decoded.userId;
-   next();
+
+    console.log("Middle Where decoded id " + decoded.userId);
+    res.locals.userId = decoded.userId;
+    next();
   } catch (e) {
-    res.status(500).json({
-      message: "Internal Server issue",
+    return res.status(403).json({
+      message: "Invalid or expired token",
     });
   }
 }

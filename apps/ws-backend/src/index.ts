@@ -95,21 +95,26 @@ ws.on("connection", function connection(ws, Request) {
 
 
       // DB Call to store the chats 
-      await prisma.chat.create({
-        data: {
-          roomId: Number(roomId),
-          message: message,
-          userId: userId
-        }
-      });
-
+      try {
+        await prisma.chat.create({
+          data: {
+            roomId: Number(roomId),
+            message: message,
+            userId: userId
+          }
+        });
+      } catch (e) {
+        console.error("Failed to save chat to DB:", e);
+      }
 
       users.forEach(user => {
-        user.ws.send(JSON.stringify({
-          type: "chat",
-          message: message,
-          roomId
-        }))
+        if (user.rooms.includes(roomId)) {
+          user.ws.send(JSON.stringify({
+            type: "chat",
+            message: message,
+            roomId
+          }))
+        }
       })
     }
 

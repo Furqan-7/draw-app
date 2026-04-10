@@ -127,6 +127,8 @@ app.post("/signin", async (req, res) => {
 
 app.post("/room", MiddleWhere, async (req, res) => {
 
+  console.log("Reached /room ");
+
   const Response = RoomSchema.safeParse({
     slug: req.body.slug,
     adminId: res.locals.userId
@@ -168,9 +170,11 @@ app.post("/room", MiddleWhere, async (req, res) => {
 
 });
 
-app.get("/chats/:id", MiddleWhere, async (req, res) => {
-  const id = Number(req.params.id);
-  if (!id) {
+app.get("/chats/:slug", MiddleWhere, async (req, res) => {
+  const slug = Number(req.params.slug);
+  console.log("Reached chats ");
+  console.log("Reached Chats And This is Id " + slug);
+  if (!slug) {
     return res.status(403).json({
       message: "invalid",
     })
@@ -179,7 +183,7 @@ app.get("/chats/:id", MiddleWhere, async (req, res) => {
   try {
     const messages = await prisma.chat.findMany({
       where: {
-        roomId: id,
+        roomId: slug,
       },
       orderBy: {
         message: "desc"
@@ -199,7 +203,8 @@ app.get("/chats/:id", MiddleWhere, async (req, res) => {
       error: e
     });
   }
-})
+});
+
 app.get("/room/:slug", async (req, res) => {
   const slug = req.params.slug;
   if (!slug) {
@@ -209,14 +214,14 @@ app.get("/room/:slug", async (req, res) => {
   }
 
   try {
-    const messages = await prisma.room.findFirst({
+    const room = await prisma.room.findFirst({
       where: {
         slug: slug
       }
     });
 
     return res.status(200).json({
-      message: messages,
+      room: room,
       status: "success"
     });
 

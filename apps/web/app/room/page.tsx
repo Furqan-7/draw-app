@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -28,7 +29,7 @@ export default function RoomPage() {
                 borderColor: "black",
                 borderWidth: 1,
                 width: 230
-            }} type="text" placeholder="Enter Room id " />
+            }} type="text" placeholder="Enter Room Name" />
 
             <div style={{
                 display: "flex",
@@ -40,9 +41,25 @@ export default function RoomPage() {
                 gap: 10
             }}>
                 <div>
-                    <button onClick={() => {
+                    <button onClick={async () => {
                         if (roomid != "") {
-                            Naviaget.push(`/room/${roomid}`);
+                            try {
+                                const token = localStorage.getItem("token");
+                                if (!token) {
+                                    alert("Login First");
+                                }
+                                const Response = await axios.post("http://localhost:3001/room", {
+                                    slug: roomid
+                                }, {
+                                    headers: { token: token }
+                                });
+
+                                Naviaget.push(`/room/${roomid}`);
+                            } catch (e) {
+                                alert("Room ALready Exists ?")
+                                Naviaget.push(`/room/${roomid}`);
+                            }
+
                         }
                         else {
                             alert("Add Room id ");

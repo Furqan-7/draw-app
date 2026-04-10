@@ -85,6 +85,7 @@ export default function SigninPage() {
                             password: password
                         });
                         if (Response.data.valid === true) {
+                            localStorage.setItem("token", Response.data.token);
                             Navigate.push("/room");
                         }
                         else {

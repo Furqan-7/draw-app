@@ -33,13 +33,14 @@ export default function CanvasPage() {
       const height = e.clientY - startY;
       if (Drawing) {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        context.strokeStyle = "white";
         context.strokeRect(startX,startY, width, height);
       }
     });
   }, [canvasRef]);
   return (
-    <div className="bg-white">
-      <canvas  id="canvas" ref={canvasRef} height={500} width={600}></canvas>
+    <div className="bg-black">
+      <canvas  id="canvas" ref={canvasRef} height={600} width={600}></canvas>
     </div>
   );
 }

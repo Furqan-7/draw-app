@@ -1,5 +1,4 @@
 import axios from "axios";
-import { AwardIcon } from "lucide-react";
 
 type Shape =
   | {
@@ -16,7 +15,7 @@ type Shape =
       radius: number;
     };
 
-  export default async function DrawPageRect(canvas: HTMLCanvasElement,roomId:string) {
+  export default async function DrawPageRect(canvas: HTMLCanvasElement,roomId:string,socket: WebSocket) {
   const context = canvas.getContext("2d");
   if (!context) {
     return;

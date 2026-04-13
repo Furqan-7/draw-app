@@ -51,7 +51,7 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
               }}
               type="text"
               placeholder="Enter name"
-              className="h-12 border-2 border-black rounded-lg px-4 text-base font-sans placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-black"
+              className="h-12 border-2 border-black rounded-lg px-4 text-base font-sans text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-black"
             />
           )}
 
@@ -62,7 +62,7 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
             }}
             type="email"
             placeholder="Enter email"
-            className="h-12 border-2 border-black rounded-lg px-4 text-base font-sans placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-black"
+            className="h-12 border-2 border-black rounded-lg px-4 text-base font-sans text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-black"
           />
 
           <input
@@ -72,7 +72,7 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
             }}
             type="password"
             placeholder="Enter password"
-            className="h-12 border-2 border-black rounded-lg px-4 text-base font-sans placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-black"
+            className="h-12 border-2 border-black rounded-lg px-4 text-base font-sans text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-black"
           />
         </div>
 

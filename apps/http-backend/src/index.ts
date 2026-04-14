@@ -9,6 +9,7 @@ import { prisma } from "@repo/db/client";
 import { error } from "node:console";
 import cors from "cors";
 
+console.log("Starting server...");
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.post("/signup", async (req, res) => {
   console.log("Reached Signup");
 
   if (!Response.success) {
-    res.status(403).json({
+    return res.status(403).json({
       message: "Invalid Format",
     });
   }
@@ -76,7 +77,7 @@ app.post("/signin", async (req, res) => {
   const Response = SigninSchema.safeParse(req.body);
 
   if (!Response.success) {
-    res.status(402).json({
+    return res.status(402).json({
       message: "Invalid Format",
       error: Response.error,
     });
@@ -234,6 +235,24 @@ app.get("/room/:slug", async (req, res) => {
   }
 })
 
-app.listen(3001, () => {
-  console.log("http-server is Running on 3001");
+// Error handlers
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Do NOT exit — keep the server alive
+});
+
+const PORT = process.env.PORT || 3002;
+
+const server = app.listen(PORT, () => {
+  console.log(`http-server is Running on ${PORT}`);
+});
+
+server.on('error', (error) => {
+  console.error('Server error:', error);
+});
+
+console.log("Server setup complete");

@@ -81,28 +81,28 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
             onClick={() => {
               setLoading(true);
               if (isSignin) {
-                <Signin 
-                  email={email} 
+                <Signin
+                  email={email}
                   password={password}
                   onSuccess={handleSigninSuccess}
                   onError={handleSigninError}
                   onFinally={() => setLoading(false)}
-                />
+                />;
               } else {
-                <Signup 
+                <Signup
                   name={name}
-                  email={email} 
+                  email={email}
                   password={password}
                   onSuccess={handleSignupSuccess}
                   onError={handleSignupError}
                   onFinally={() => setLoading(false)}
-                />
+                />;
               }
             }}
             disabled={loading}
             className="bg-black text-white font-semibold text-base py-3 px-8 rounded-lg border-2 border-black hover:bg-gray-800 transition-all disabled:opacity-50"
           >
-            {loading ? "Loading..." : (isSignin ? "Sign In" : "Sign Up")}
+            {loading ? "Loading..." : isSignin ? "Sign In" : "Sign Up"}
           </button>
         </div>
 
@@ -150,7 +150,7 @@ function Signup({
   onFinally: () => void;
 }): any {
   axios
-    .post("http://localhost:3000/signup", {
+    .post("http://localhost:3001/signup", {
       name: name,
       email: email,
       password: password,
@@ -174,7 +174,7 @@ function Signin({
   onFinally: () => void;
 }): any {
   axios
-    .post("http://localhost:3000/signin", {
+    .post("http://localhost:3001/signin", {
       email: email,
       password: password,
     })

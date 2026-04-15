@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { AwardIcon } from "lucide-react";
 
 export default function AuthPage({ isSignin }: { isSignin: boolean }) {
   const [name, setName] = useState("");
@@ -12,25 +13,30 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSigninSuccess = (response: any) => {
-    console.log("Sign In Success:", response);
-    localStorage.setItem("token", response.token);
-    router.push("/room");
-  };
-
-  const handleSigninError = (error: any) => {
-    console.error("Sign In Error:", error);
-    alert("Incorrect credentials");
-  };
-
-  const handleSignupSuccess = (response: any) => {
-    console.log("Sign Up Success:", response);
-    router.push("/room");
-  };
-
-  const handleSignupError = (error: any) => {
-    console.error("Sign Up Error:", error);
-    alert("User already exists or error occurred");
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      if (!isSignin) {
+        const Response = await axios.post("http://localhost:3002/signup", {
+          name: name,
+          email: email,
+          password: password,
+        });
+      } else {
+        const Response = await axios.post("http://localhost:3002/signin", {
+          email: email,
+          password: password,
+        });
+        if (Response.data.token) {
+          localStorage.setItem("token", Response.data.token);
+        }
+      }
+    } catch (error) {
+      alert(error);
+    } finally {
+      setLoading(false);
+      router.push("/canvas/123");
+    }
   };
 
   return (
@@ -78,27 +84,7 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
 
         <div className="flex justify-center mt-8">
           <button
-            onClick={() => {
-              setLoading(true);
-              if (isSignin) {
-                <Signin
-                  email={email}
-                  password={password}
-                  onSuccess={handleSigninSuccess}
-                  onError={handleSigninError}
-                  onFinally={() => setLoading(false)}
-                />;
-              } else {
-                <Signup
-                  name={name}
-                  email={email}
-                  password={password}
-                  onSuccess={handleSignupSuccess}
-                  onError={handleSignupError}
-                  onFinally={() => setLoading(false)}
-                />;
-              }
-            }}
+            onClick={handleSubmit}
             disabled={loading}
             className="bg-black text-white font-semibold text-base py-3 px-8 rounded-lg border-2 border-black hover:bg-gray-800 transition-all disabled:opacity-50"
           >
@@ -132,53 +118,4 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
       </div>
     </div>
   );
-}
-
-function Signup({
-  name,
-  email,
-  password,
-  onSuccess,
-  onError,
-  onFinally,
-}: {
-  name: string;
-  email: string;
-  password: string;
-  onSuccess: (response: any) => void;
-  onError: (error: any) => void;
-  onFinally: () => void;
-}): any {
-  axios
-    .post("http://localhost:3001/signup", {
-      name: name,
-      email: email,
-      password: password,
-    })
-    .then((response) => onSuccess(response.data))
-    .catch((error) => onError(error))
-    .finally(() => onFinally());
-}
-
-function Signin({
-  email,
-  password,
-  onSuccess,
-  onError,
-  onFinally,
-}: {
-  email: string;
-  password: string;
-  onSuccess: (response: any) => void;
-  onError: (error: any) => void;
-  onFinally: () => void;
-}): any {
-  axios
-    .post("http://localhost:3001/signin", {
-      email: email,
-      password: password,
-    })
-    .then((response) => onSuccess(response.data))
-    .catch((error) => onError(error))
-    .finally(() => onFinally());
 }

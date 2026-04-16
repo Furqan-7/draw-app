@@ -1,10 +1,8 @@
 "use client";
-
 import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { AwardIcon } from "lucide-react";
 
 export default function AuthPage({ isSignin }: { isSignin: boolean }) {
   const [name, setName] = useState("");
@@ -22,6 +20,9 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
           email: email,
           password: password,
         });
+        if (Response.data.token) {
+          localStorage.setItem("token", Response.data.token);
+        }
       } else {
         const Response = await axios.post("http://localhost:3002/signin", {
           email: email,
@@ -35,7 +36,7 @@ export default function AuthPage({ isSignin }: { isSignin: boolean }) {
       alert(error);
     } finally {
       setLoading(false);
-      router.push("/canvas/123");
+      router.push("/room");
     }
   };
 

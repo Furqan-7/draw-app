@@ -13,15 +13,14 @@ console.log("Starting server...");
 
 const app = express();
 
-
 app.use(express.json());
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}));
-
-
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+);
 
 app.post("/signup", async (req, res) => {
   const Response = SignupSchema.safeParse(req.body);
@@ -39,7 +38,6 @@ app.post("/signup", async (req, res) => {
   const name = req.body.name;
   const photo = req.body.photo;
 
-
   try {
     // Add the user to the data base
     // * Add the Hash Password in The db
@@ -48,27 +46,31 @@ app.post("/signup", async (req, res) => {
       data: {
         email: email,
         password: password,
-        name: name
-      }
+        name: name,
+      },
     });
 
     if (user) {
-      res.status(200).json({
+      const User_id = user.id;
+      const token = jwt.sign({ userId: User_id.toString() }, JWT_TOKEN, {
+        expiresIn: "24h",
+      });
+      return res.status(200).json({
         message: "User Signup successfully",
-        valid: true
+        valid: true,
+        token: token,
+      });
+    } else {
+      return res.status(400).json({
+        message: "User Already Exists",
+        valid: false,
       });
     }
-    else {
-      res.status(400).json({
-        message: "User Already Exists",
-        valid: false
-      })
-    }
   } catch (e) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Internal server issue",
       error: e,
-      valid: false
+      valid: false,
     });
   }
 });
@@ -92,8 +94,8 @@ app.post("/signin", async (req, res) => {
     const user = await prisma.user.findFirst({
       where: {
         email: email,
-        password: password
-      }
+        password: password,
+      },
     });
 
     if (user) {
@@ -108,14 +110,12 @@ app.post("/signin", async (req, res) => {
         message: "Sign up Sucessfully ",
         valid: true,
       });
-    }
-    else {
+    } else {
       res.status(200).json({
         message: "Invalid Credentials",
-        valid: false
-      })
+        valid: false,
+      });
     }
-
   } catch (e) {
     res.status(500).json({
       message: "Internal Server issue",
@@ -124,61 +124,58 @@ app.post("/signin", async (req, res) => {
   }
 });
 
-
-
 app.post("/room", MiddleWhere, async (req, res) => {
-
   console.log("Reached /room ");
 
   const Response = RoomSchema.safeParse({
     slug: req.body.slug,
-    adminId: res.locals.userId
+    adminId: res.locals.userId,
   });
 
   if (!Response.success) {
     return res.status(400).json({
       message: "Invalid Format",
       error: Response.error,
-      valid: false
+      valid: false,
     });
   }
 
   const slug = req.body.slug;
   const userId = res.locals.userId;
 
+  console.log("Creating Room with slug: " + slug + " and adminId: " + userId);
+
   try {
     const room = await prisma.room.create({
       data: {
         slug: slug,
-        adminId: userId
-      }
+        adminId: userId,
+      },
     });
 
     return res.status(200).json({
       message: "Successfully Joined Room",
-      room: room.id,
-      valid: true
-    })
+      roomId: room.id,
+      valid: true,
+    });
   } catch (e) {
     return res.status(400).json({
       messgae: "Falied to create room",
       error: e,
-      valid: false
+      valid: false,
     });
   }
-
-
-
 });
 
 app.get("/chats/:slug", MiddleWhere, async (req, res) => {
   const slug = Number(req.params.slug);
+  
   console.log("Reached chats ");
   console.log("Reached Chats And This is Id " + slug);
   if (!slug) {
     return res.status(403).json({
       message: "invalid",
-    })
+    });
   }
 
   try {
@@ -187,61 +184,57 @@ app.get("/chats/:slug", MiddleWhere, async (req, res) => {
         roomId: slug,
       },
       orderBy: {
-        message: "desc"
+        message: "desc",
       },
-      take: 50
+      take: 50,
     });
 
     return res.status(200).json({
       message: messages,
-      status: "success"
+      status: "success",
     });
-
-  }
-  catch (e) {
+  } catch (e) {
     return res.status(404).json({
       message: "Failed to fetch the messages",
-      error: e
+      error: e,
     });
   }
 });
 
-app.get("/room/:slug", async (req, res) => {
-  const slug = req.params.slug;
-  if (!slug) {
-    return res.status(403).json({
-      message: "invalid",
-    })
-  }
+// app.get("/room/:slug", async (req, res) => {
+//   const slug = Number(req.params.slug);
+//   if (!slug) {
+//     return res.status(403).json({
+//       message: "invalid",
+//     });
+//   }
 
-  try {
-    const room = await prisma.room.findFirst({
-      where: {
-        slug: slug
-      }
-    });
+//   try {
+//     const room = await prisma.room.findFirst({
+//       where: {
+//         slug: slug,
+//       },
+//     });
 
-    return res.status(200).json({
-      room: room,
-      status: "success"
-    });
-
-  }
-  catch (e) {
-    return res.status(404).json({
-      message: "Failed to fetch the messages",
-      error: e
-    });
-  }
-})
+//     return res.status(200).json({
+//       room: room,
+//       status: "success",
+//     });
+//   } catch (e) {
+//     return res.status(404).json({
+//       message: "Failed to fetch the messages",
+//       error: e,
+//     });
+//   }
+// });
 
 // Error handlers
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
 });
 
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
   // Do NOT exit — keep the server alive
 });
 
@@ -251,8 +244,8 @@ const server = app.listen(PORT, () => {
   console.log(`http-server is Running on ${PORT}`);
 });
 
-server.on('error', (error) => {
-  console.error('Server error:', error);
+server.on("error", (error) => {
+  console.error("Server error:", error);
 });
 
 console.log("Server setup complete");

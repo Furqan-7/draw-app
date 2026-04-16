@@ -93,6 +93,8 @@ ws.on("connection", function connection(ws, Request) {
       const roomId = ParsedData.roomId;
       const message = ParsedData.message;
 
+      console.log("Received message for room:", roomId, "Message:", message);
+
 
       // DB Call to store the chats 
       try {

@@ -2,7 +2,7 @@
 import DrawPageRect from "@/draw/page";
 import { useEffect, useRef } from "react";
 
-export default function Canvas({ roomId,socket }: { roomId: string,socket: WebSocket }) {
+export default function Canvas({ roomId,socket,token }: { roomId: string,socket: WebSocket,token: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -10,7 +10,7 @@ export default function Canvas({ roomId,socket }: { roomId: string,socket: WebSo
     if (!canvas) {
       return;
     }
-    DrawPageRect(canvas, roomId,socket);
+    DrawPageRect(canvas, roomId,socket,token);
   }, [canvasRef]);
 
   return (

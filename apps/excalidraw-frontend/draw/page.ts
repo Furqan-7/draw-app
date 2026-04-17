@@ -34,7 +34,8 @@ export default async function DrawPageRect(
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
     if (message.type === "chat") {
-      ExsistingShpae.push(message.message);
+      const shape = JSON.parse(message.message); // Parse the JSON string
+      ExsistingShpae.push(shape);
       redraw(context, ExsistingShpae);
     }
   };
@@ -72,13 +73,17 @@ export default async function DrawPageRect(
         roomId: roomId,
       }),
     );
-    
   });
   canvas.addEventListener("mousemove", (e) => {
     if (Drawing) {
       const width = e.clientX - startX;
       const height = e.clientY - startY;
-      console.log("Drawing shape at: ", { x: startX, y: startY, width, height });
+      console.log("Drawing shape at: ", {
+        x: startX,
+        y: startY,
+        width,
+        height,
+      });
       redraw(context, ExsistingShpae);
       context.strokeStyle = "white";
       context.strokeRect(startX, startY, width, height);
@@ -98,30 +103,35 @@ function redraw(context: CanvasRenderingContext2D, shapes: Shape[]) {
 }
 
 async function getExistingShapes(roomId: string, token: string) {
-  console.log("RoomId "+ roomId);
+  console.log("RoomId " + roomId);
   const response = await axios.get(`http://localhost:3002/chats/${roomId}`, {
     headers: {
-      token: token
+      token: token,
     },
   });
 
   console.log("Existing shapes response: ", response.data);
 
-  if(response.data.message.length === 0){
+  if (response.data.message.length === 0) {
     console.log("No existing shapes found for room: " + roomId);
     return [];
   }
 
   const Shapes: Shape[] = response.data.message.map((msg: any) => {
-    try{
+    try {
       const shape = JSON.parse(msg.message);
       console.log("Parsed shape: ", shape);
       return shape;
-    }catch(e){
-      console.error("Failed to parse shape from message: ", msg.message, "Error: ", e);
+    } catch (e) {
+      console.error(
+        "Failed to parse shape from message: ",
+        msg.message,
+        "Error: ",
+        e,
+      );
       return [];
     }
-  },);
+  });
   console.log("Existing shapes for room " + roomId + ": ", Shapes);
   return Shapes;
 }

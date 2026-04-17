@@ -87,7 +87,7 @@ ws.on("connection", function connection(ws, Request) {
         return;
       }
 
-      user.rooms = user.rooms.filter(x => x === ParsedData.roomId);
+      user.rooms = user.rooms.filter(x => x !== ParsedData.roomId);
     }
 
     if (ParsedData.type === "chat") {

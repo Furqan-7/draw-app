@@ -47,6 +47,7 @@ ws.on("connection", function connection(ws, Request) {
 
   const querryParams = new URLSearchParams(url.split("?")[1]);
   const token = querryParams.get("token") || "";
+  console.log("New WebSocket connection with token: ", token);
   const userId = CHeckToken(token);
 
 

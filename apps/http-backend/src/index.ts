@@ -186,7 +186,7 @@ app.get("/chats/:slug", MiddleWhere, async (req, res) => {
       orderBy: {
         message: "desc",
       },
-      take: 50,
+      take: 100,
     });
 
     return res.status(200).json({

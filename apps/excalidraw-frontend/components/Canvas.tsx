@@ -10,7 +10,8 @@ export default function Canvas({ roomId,socket,token }: { roomId: string,socket:
     if (!canvas) {
       return;
     }
-    DrawPageRect(canvas, roomId,socket,token);
+    console.log("Canvas component mounted with roomId: " + roomId);
+    DrawPageRect(canvas,roomId,socket,token);
   }, [canvasRef]);
 
   return (

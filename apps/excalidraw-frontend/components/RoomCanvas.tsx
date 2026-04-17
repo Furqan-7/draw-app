@@ -5,6 +5,7 @@ import Canvas from "./Canvas";
 export default function RoomCanvas({ roomId }: { roomId: string }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -13,23 +14,19 @@ export default function RoomCanvas({ roomId }: { roomId: string }) {
       return;
     }
     setToken(storedToken);
-  }, []);
-
-  useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8080/ws?token=${token}`);
-
+    const ws = new WebSocket(`ws://localhost:8080/ws?token=${storedToken}`);
     ws.onopen = () => {
       console.log("WebSocket connection established");
       setSocket(ws);
       ws.send(JSON.stringify({ type: "join_room", roomId }));
     };
-  }, []);
+  }, [roomId]);
 
   if (!socket) {
     return <div>Connecting to WebSocket...</div>;
   }
 
-  if(!token){
+  if (!token) {
     return <div>Loading...</div>;
   }
 

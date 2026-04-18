@@ -143,6 +143,24 @@ app.post("/room", MiddleWhere, async (req, res) => {
   const slug = req.body.slug;
   const userId = res.locals.userId;
 
+  // First Check If the Room with the same slug already exists or not
+
+  const existingRoom = await prisma.room.findFirst({
+    where:{
+      slug: slug,
+      adminId: userId,
+    }
+  })
+
+  if(existingRoom){
+    return res.status(400).json({
+      message: "Room with the same slug already exists",
+      valid: false,
+      Exits:true,
+      roomId: existingRoom.id,
+    });
+  }
+
   console.log("Creating Room with slug: " + slug + " and adminId: " + userId);
 
   try {

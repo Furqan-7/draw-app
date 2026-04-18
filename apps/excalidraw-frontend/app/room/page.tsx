@@ -34,9 +34,9 @@ export default function CreateRoomPage() {
         },
         {
           headers: {
-            token:token,
+            token: token,
           },
-        }
+        },
       );
 
       console.log("Create Room Response:", response.data);
@@ -66,16 +66,19 @@ export default function CreateRoomPage() {
         return;
       }
 
-      const response = await axios.get(
-        `http://localhost:3002/rooms/slug/${slug}`,
+      const response = await axios.post(
+        `http://localhost:3002/room`,
+        {
+          slug: slug,
+        },
         {
           headers: {
-           token:token
+            token: token,
           },
-        }
+        },
       );
 
-      if (response.data.roomId) {
+      if (response.data.Exits === true && response.data.roomId) {
         router.push(`/canvas/${response.data.roomId}`);
       }
     } catch (error) {
